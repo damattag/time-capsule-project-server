@@ -16,12 +16,14 @@ app.register(jwt, {
   secret: "spacetime",
 });
 
+app.register(authRoutes, { prefix: "/register" });
 app.register(memoriesRoutes, { prefix: "/memories" });
-app.register(authRoutes);
+
 app
   .listen({
     port: 3333,
+    host: "0.0.0.0",
   })
   .then(() => {
-    console.log("🚀 HTTP server running on https://localhost:3333");
+    console.log("🚀 HTTP server running on port http://localhost:3333");
   });

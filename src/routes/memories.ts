@@ -12,7 +12,6 @@ export async function memoriesRoutes(app: FastifyInstance) {
       where: {
         userId: request.user.sub,
       },
-
       orderBy: {
         createdAt: "asc",
       },
@@ -22,7 +21,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       return {
         id: memory.id,
         coverUrl: memory.coverUrl,
-        excerpt: memory.content.substring(0, 110).concat("..."),
+        excerpt: memory.content.substring(0, 115).concat("..."),
       };
     });
   });
@@ -44,19 +43,17 @@ export async function memoriesRoutes(app: FastifyInstance) {
       return reply.status(401).send();
     }
 
-    return {
-      memory,
-    };
+    return memory;
   });
 
   app.post("/", async (request) => {
     const bodySchema = z.object({
       content: z.string(),
-      coverUrl: z.string().url(),
+      coverUrl: z.string(),
       isPublic: z.coerce.boolean().default(false),
     });
 
-    const { content, isPublic, coverUrl } = bodySchema.parse(request.body);
+    const { content, coverUrl, isPublic } = bodySchema.parse(request.body);
 
     const memory = await prisma.memory.create({
       data: {
@@ -67,9 +64,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       },
     });
 
-    return {
-      memory,
-    };
+    return memory;
   });
 
   app.put("/:id", async (request, reply) => {
@@ -81,11 +76,11 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     const bodySchema = z.object({
       content: z.string(),
-      coverUrl: z.string().url(),
+      coverUrl: z.string(),
       isPublic: z.coerce.boolean().default(false),
     });
 
-    const { content, isPublic, coverUrl } = bodySchema.parse(request.body);
+    const { content, coverUrl, isPublic } = bodySchema.parse(request.body);
 
     let memory = await prisma.memory.findUniqueOrThrow({
       where: {
@@ -108,9 +103,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       },
     });
 
-    return {
-      memory,
-    };
+    return memory;
   });
 
   app.delete("/:id", async (request, reply) => {

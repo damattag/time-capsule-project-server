@@ -1,18 +1,18 @@
 import { FastifyInstance } from "fastify";
 import axios from "axios";
-import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { prisma } from "../lib/prisma";
 
 export async function authRoutes(app: FastifyInstance) {
-  app.post("/register", async (request) => {
+  app.post("/", async (request) => {
     const bodySchema = z.object({
       code: z.string(),
     });
 
     const { code } = bodySchema.parse(request.body);
 
-    const accessTokenReponse = await axios.post(
-      "https://github.com/login/oauth/acess_token",
+    const accessTokenResponse = await axios.post(
+      "https://github.com/login/oauth/access_token",
       null,
       {
         params: {
@@ -26,11 +26,11 @@ export async function authRoutes(app: FastifyInstance) {
       }
     );
 
-    const { access_token } = accessTokenReponse.data;
+    const { access_token } = accessTokenResponse.data;
 
     const userResponse = await axios.get("https://api.github.com/user", {
       headers: {
-        authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
     });
 
@@ -71,6 +71,8 @@ export async function authRoutes(app: FastifyInstance) {
       }
     );
 
-    return { token };
+    return {
+      token,
+    };
   });
 }
